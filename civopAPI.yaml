@@ -5,7 +5,7 @@ info:
   description: API for managing control tasks
 
 paths:
-  /api/control_task/{controlTaskId}:
+  /api/control_task:
     post:
       summary: Retrieve details of a specific control task
       description: Fetches the details of a control task identified by its unique ID.
