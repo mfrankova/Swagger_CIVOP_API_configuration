@@ -2,93 +2,177 @@ openapi: 3.0.0
 info:
   title: CIVOP API
   version: 1.0.0
-  description: API for managing defects
+  description: API for managing control tasks
 
 paths:
-  /api/document:
-      post:
-        summary: Attach a control document to a specific defect
-        description: Upload a control document
-        requestBody:
+  /api/control_task/{controlTaskId}:
+    get:
+      summary: Retrieve details of a specific control task
+      description: Fetches the details of a control task identified by its unique ID.
+      parameters:
+        - name: controlTaskId
+          in: path
           required: true
+          schema:
+            type: integer
+          description: The unique identifier of the control task.
+      responses:
+        200:
+          description: Successfully retrieved control task details
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  filename:
-                    type: string
-                    description: The filename of the document.
-                  contentType:
-                    type: string
-                    description: The MIME type of the document (e.g., "application/pdf").
-                  base64Data:
-                    type: string
-                    description: Base64 encoded document data.
-                  specialist:
-                    type: string
-                    description: The name of the specialist who conducted the inspection.
-                  inspectionDate:
-                    type: string
-                    format: date
-                    description: The date of inspection in YYYY-MM-DD format.
-                  numberOfDefects:
+                  controlTaskId:
                     type: integer
-                    description: The total number of defects found during the inspection.
-                  codesOfDefects:
+                    description: The unique identifier of the control task.
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: The timestamp when the control task was created.
+        404:
+          description: Control task not found
+        500:
+          description: Internal server error
+
+  /api/control_task/{controlTaskId}/document:
+    post:
+      summary: Create a new document related to a control task
+      description: Create a new document for the given control task identified by {controlTaskId}.
+      parameters:
+        - name: controlTaskId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the control task to which the document will be added.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: string
+                  description: The filename of the document to be added.
+                contentType:
+                  type: string
+                  description: The content type of the document (e.g., application/pdf, image/jpeg).
+                base64Data:
+                  type: string
+                  description: The base64 encoded content of the document.
+                specialist:
+                  type: string
+                  description: The specialist associated with the document.
+                inspectionDate:
+                  type: string
+                  format: date
+                  description: The date of the inspection.
+                numberOfDefects:
+                  type: integer
+                  description: The total number of defects found during the inspection.
+                codesOfDefects:
                     type: array
                     items:
                       type: integer
                     description: A list of codes identifying the defects found.
-        responses:
-          200:
-            description: Document successfully attached
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    documentId:
-                      type: integer
-                      description: The unique identifier of the document.
-                    filename:
-                      type: string
-                      description: The filename of the document.
-                    contentType:
-                      type: string
-                      description: The MIME type of the document (e.g., "application/pdf").                 
-                    specialist:
-                      type: string
-                      description: The name of the specialist who conducted the inspection.
-                    inspectionDate:
-                      type: string
-                      format: date
-                      description: The date of inspection in YYYY-MM-DD format.
-                    numberOfDefects:
-                      type: integer
-                      description: The total number of defects found during the inspection.
-                    codesOfDefects:
-                      type: array
-                      items:
+                pictures:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                        description: The filename of the image.
+                      contentType:
+                        type: string
+                        description: The MIME type of the image.
+                      base64Data:
+                        type: string
+                        description: Base64 encoded image data.
+                additionalDocuments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                        description: The filename of the additional document.
+                      contentType:
+                        type: string
+                        description: The MIME type of the additional document.
+                      base64Data:
+                        type: string
+                        description: Base64 encoded additional document data.
+      responses:
+        200:
+          description: Document successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating that the document was created.
+                  createdDocument:
+                    type: object
+                    properties:
+                      documentId:
                         type: integer
-                      description: A list of codes identifying the defects found.
-          400:
-            description: Invalid input data
-          404:
-            description: Defect not found
-          500:
-            description: Internal server error
-  /api/document/{documentId}/defect:
+                      filename:
+                        type: string
+                      contentType:
+                        type: string
+                      specialist:
+                        type: string
+                      inspectionDate:
+                        type: string
+                        format: date
+                      numberOfDefects:
+                        type: integer
+                      codesOfDefects:
+                        type: array
+                        items:
+                          type: integer
+                      pictures:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            filename:
+                              type: string
+                            contentType:
+                              type: string
+                      additionalDocuments:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            filename:
+                              type: string
+                            contentType:
+                              type: string
+        400:
+          description: Invalid input data
+        404:
+          description: Control task not found
+        500:
+          description: Internal server error
+
+  /api/control_task/{controlTaskId}/defect:
     post:
-      summary: Create a new defect report
-      description: Submit a new defect report with relevant details about the defect, inspection, and associated images.
+      summary: Create a new defect related to a control task
+      description: Create a new defect for the given control task identified by {controlTaskId}.
       parameters:
-      - name: documentId
-        in: path
-        required: true
-        schema:
-          type: integer
-        description: The unique identifier of the document to which the defect will be attached.
+        - name: controlTaskId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the control task to which the defect will be added.
       requestBody:
         required: true
         content:
@@ -99,38 +183,35 @@ paths:
                 inspectionDate:
                   type: string
                   format: date
-                  description: The date of inspection in YYYY-MM-DD format.
+                  description: The date of the inspection for the defect.
                 branch:
                   type: string
-                  description: The name of the branch or location of the inspection.
+                  description: The branch where the defect was identified.
                 establishment:
                   type: string
-                  description: The full address and details of the establishment.
+                  description: The establishment where the defect was found.
                 specialist:
                   type: string
-                  description: The name of the specialist conducting the inspection.
+                  description: The specialist responsible for the defect.
                 responsiblePerson:
                   type: string
-                  description: The person or entity responsible for the defect.
+                  description: The person responsible for addressing the defect.
                 severity:
                   type: string
-                  description: The severity level of the defect (e.g., "critical").
+                  description: The severity level of the defect.
                 repeated:
-                  type: string
-                  enum:
-                    - "true"
-                    - "false"
-                  description: Indicates whether the defect is a repeat of a previous one (should ideally be boolean).
+                  type: boolean
+                  description: Indicates if the defect is a repeated issue.
                 repeatedFrom:
                   type: string
                   format: date
-                  description: The date when the defect was repeated (if applicable).
+                  description: The date from which the defect was repeated, if applicable.
                 defectCode:
                   type: string
-                  description: A code identifying the defect.
+                  description: The code for the defect.
                 description:
                   type: string
-                  description: A detailed description of the defect.
+                  description: The detailed description of the defect.
                 note:
                   type: string
                   description: Additional notes related to the defect.
@@ -166,45 +247,30 @@ paths:
                   inspectionDate:
                     type: string
                     format: date
-                    description: The date of inspection in YYYY-MM-DD format.
                   branch:
                     type: string
-                    description: The name of the branch or location of the inspection.
                   establishment:
                     type: string
-                    description: The full address and details of the establishment.
                   specialist:
                     type: string
-                    description: The name of the specialist conducting the inspection.
                   responsiblePerson:
                     type: string
-                    description: The person or entity responsible for the defect.
                   severity:
                     type: string
-                    description: The severity level of the defect (e.g., "critical").
                   repeated:
-                    type: string
-                    enum:
-                      - "true"
-                      - "false"
-                    description: Indicates whether the defect is a repeat of a previous one.
+                    type: boolean
                   repeatedFrom:
                     type: string
                     format: date
-                    description: The date when the defect was repeated (if applicable).
                   defectCode:
                     type: string
-                    description: A code identifying the defect.
                   description:
                     type: string
-                    description: A detailed description of the defect.
                   note:
                     type: string
-                    description: Additional notes related to the defect.
                   defectDeadline:
                     type: string
                     format: date
-                    description: The deadline for fixing the defect.
                   pictures:
                     type: array
                     items:
@@ -212,43 +278,32 @@ paths:
                       properties:
                         filename:
                           type: string
-                          description: The filename of the image.
                         contentType:
                           type: string
-                          description: The MIME type of the image.
-                        base64Data:
-                          type: string
-                          description: Base64 encoded image data.
-                  insertDate:
-                    type: string
-                    format: date-time
-                    description: The date when the defect was first created.
-                  modifyDate:
-                    type: string
-                    format: date-time
-                    description: The date when the defect was last modified (for updates).
         400:
           description: Invalid input data
+        404:
+          description: Control task not found
         500:
           description: Internal server error
-          
-  /api/document/{documentId}/defect/{defectId}:
+
+  /api/control_task/{controlTaskId}/defect/{defectId}:
     put:
-      summary: Modify an existing defect report
-      description: Update the details of an existing defect report identified by `defectId`.
+      summary: Update an existing defect related to a control task
+      description: Update the details of an existing defect for the control task identified by {controlTaskId}.
       parameters:
+        - name: controlTaskId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the control task to which the defect is linked.
         - name: defectId
           in: path
           required: true
           schema:
             type: integer
-          description: The unique identifier of the defect to be updated.
-        - name: documentId
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: The unique identifier of the document to which the defect will be attached.
+          description: The unique defect identifier that will be updated.
       requestBody:
         required: true
         content:
@@ -259,38 +314,35 @@ paths:
                 inspectionDate:
                   type: string
                   format: date
-                  description: The date of inspection in YYYY-MM-DD format.
+                  description: The date of the inspection for the defect.
                 branch:
                   type: string
-                  description: The name of the branch or location of the inspection.
+                  description: The branch where the defect was identified.
                 establishment:
                   type: string
-                  description: The full address and details of the establishment.
+                  description: The establishment where the defect was found.
                 specialist:
                   type: string
-                  description: The name of the specialist conducting the inspection.
+                  description: The specialist responsible for the defect.
                 responsiblePerson:
                   type: string
-                  description: The person or entity responsible for the defect.
+                  description: The person responsible for addressing the defect.
                 severity:
                   type: string
-                  description: The severity level of the defect (e.g., "critical").
+                  description: The severity level of the defect.
                 repeated:
-                  type: string
-                  enum:
-                    - "true"
-                    - "false"
-                  description: Indicates whether the defect is a repeat of a previous one (should ideally be boolean).
+                  type: boolean
+                  description: Indicates if the defect is a repeated issue.
                 repeatedFrom:
                   type: string
                   format: date
-                  description: The date when the defect was repeated (if applicable).
+                  description: The date from which the defect was repeated, if applicable.
                 defectCode:
                   type: string
-                  description: A code identifying the defect.
+                  description: The code for the defect.
                 description:
                   type: string
-                  description: A detailed description of the defect.
+                  description: The detailed description of the defect.
                 note:
                   type: string
                   description: Additional notes related to the defect.
@@ -320,150 +372,58 @@ paths:
               schema:
                 type: object
                 properties:
-                  defectId:
-                    type: integer
-                    description: A unique identifier for the defect.
-                  inspectionDate:
+                  message:
                     type: string
-                    format: date
-                    description: The date of inspection in YYYY-MM-DD format.
-                  branch:
-                    type: string
-                    description: The name of the branch or location of the inspection.
-                  establishment:
-                    type: string
-                    description: The full address and details of the establishment.
-                  specialist:
-                    type: string
-                    description: The name of the specialist conducting the inspection.
-                  responsiblePerson:
-                    type: string
-                    description: The person or entity responsible for the defect.
-                  severity:
-                    type: string
-                    description: The severity level of the defect (e.g., "critical").
-                  repeated:
-                    type: string
-                    enum:
-                      - "true"
-                      - "false"
-                    description: Indicates whether the defect is a repeat of a previous one.
-                  repeatedFrom:
-                    type: string
-                    format: date
-                    description: The date when the defect was repeated (if applicable).
-                  defectCode:
-                    type: string
-                    description: A code identifying the defect.
-                  description:
-                    type: string
-                    description: A detailed description of the defect.
-                  note:
-                    type: string
-                    description: Additional notes related to the defect.
-                  defectDeadline:
-                    type: string
-                    format: date
-                    description: The deadline for fixing the defect.
-                  pictures:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        filename:
-                          type: string
-                          description: The filename of the image.
-                        contentType:
-                          type: string
-                          description: The MIME type of the image.
-                        base64Data:
-                          type: string
-                          description: Base64 encoded image data.
-                  insertDate:
-                    type: string
-                    format: date-time
-                    description: The date when the defect was first created.
-                  modifyDate:
-                    type: string
-                    format: date-time
-                    description: The date when the defect was last modified.
+                    description: Success message indicating the defect was updated.
+                  updatedDefect:
+                    type: object
+                    properties:
+                      defectId:
+                        type: integer
+                      inspectionDate:
+                        type: string
+                        format: date
+                      branch:
+                        type: string
+                      establishment:
+                        type: string
+                      specialist:
+                        type: string
+                      responsiblePerson:
+                        type: string
+                      severity:
+                        type: string
+                      repeated:
+                        type: boolean
+                      repeatedFrom:
+                        type: string
+                        format: date
+                      defectCode:
+                        type: string
+                      description:
+                        type: string
+                      note:
+                        type: string
+                      defectDeadline:
+                        type: string
+                        format: date
+                      pictures:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            filename:
+                              type: string
+                            contentType:
+                              type: string
         400:
           description: Invalid input data
         404:
-          description: Defect not found
+          description: Control task or defect not found
         500:
           description: Internal server error
-  
-  
-  
-  /api/document/{documentId}/defects:
-    get:
-      summary: Retrieve all defects attached to a specific document.
-      description: Fetch an array of defects associated with a document identified by `documentId`.
-      parameters:
-        - name: documentId
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: The unique identifier of the document whose defects are to be retrieved.
-      responses:
-        200:
-          description: Successfully retrieved the list of documents
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  defectId:
-                    type: integer
-                    description: A unique identifier for the defect.
-                  inspectionDate:
-                    type: string
-                    format: date
-                    description: The date of inspection in YYYY-MM-DD format.
-                  branch:
-                    type: string
-                    description: The name of the branch or location of the inspection.
-                  establishment:
-                    type: string
-                    description: The full address and details of the establishment.
-                  specialist:
-                    type: string
-                    description: The name of the specialist conducting the inspection.
-                  responsiblePerson:
-                    type: string
-                    description: The person or entity responsible for the defect.
-                  severity:
-                    type: string
-                    description: The severity level of the defect (e.g., "critical").
-                  repeated:
-                    type: string
-                    enum:
-                      - "true"
-                      - "false"
-                    description: Indicates whether the defect is a repeat of a previous one.
-                  repeatedFrom:
-                    type: string
-                    format: date
-                    description: The date when the defect was repeated (if applicable).
-                  defectCode:
-                    type: string
-                    description: A code identifying the defect.
-                  description:
-                    type: string
-                    description: A detailed description of the defect.
-                  note:
-                    type: string
-                    description: Additional notes related to the defect.
-                  defectDeadline:
-                    type: string
-                    format: date
-                    description: The deadline for fixing the defect.
-        404:
-          description: Defect not found or no documents associated
-        500:
-          description: Internal server error
+
+
 
 
 
