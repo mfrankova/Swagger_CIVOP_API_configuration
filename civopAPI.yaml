@@ -353,10 +353,7 @@ paths:
               schema:
                 type: object
                 title: legislativeRegulations
-                properties:
-                  message:
-                    type: string
-                    description: Success message indicating that the document was uploaded.
+                properties:                  
                   documentDetails:
                     type: object
                     properties:
@@ -373,6 +370,9 @@ paths:
                       documentName:
                         type: string
                         description: The name of the legislative document.
+                    message:
+                      type: string
+                      description: Success message indicating that the document was uploaded.
         '400':
           description: Bad request. Missing or invalid data.
         '500':
