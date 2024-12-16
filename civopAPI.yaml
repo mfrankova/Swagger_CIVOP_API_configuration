@@ -9,8 +9,8 @@ info:
 paths:
   /api/control_Task:
     post:
-      summary: Retrieve details of a specific control task
-      description: Fetches the details of a control task based on its unique ID provided in the request body.
+      summary: Create an internal ID for a control task based on the supplier's task details.
+      description: Accepts a supplier's task ID and title to generate and return a new internal task ID for creating related documents and defects.
       requestBody:
         required: true
         content:
