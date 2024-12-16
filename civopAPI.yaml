@@ -6,16 +6,9 @@ info:
 
 paths:
   /api/control_task/{controlTaskId}:
-    get:
+    post:
       summary: Retrieve details of a specific control task
       description: Fetches the details of a control task identified by its unique ID.
-      parameters:
-        - name: controlTaskId
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: The unique identifier of the control task.
       responses:
         200:
           description: Successfully retrieved control task details
