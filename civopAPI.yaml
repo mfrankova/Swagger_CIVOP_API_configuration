@@ -119,9 +119,7 @@ paths:
                     description: Success message indicating that the document was created.
                   createdDocument:
                     type: object
-                    properties:
-                      documentId:
-                        type: integer
+                    properties:                      
                       filename:
                         type: string
                       contentType:
