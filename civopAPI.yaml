@@ -5,10 +5,17 @@ info:
   description: API for managing control tasks
 
 paths:
-  /api/control_task:
+  /api/control_task/{civopControlTaskId}:
     post:
       summary: Retrieve details of a specific control task
       description: Fetches the details of a control task identified by its unique ID.
+      parameters:
+        - name: civopControlTaskId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the control task.
       responses:
         200:
           description: Successfully retrieved control task details
@@ -17,6 +24,9 @@ paths:
               schema:
                 type: object
                 properties:
+                  civopControlTaskId:
+                    type: integer
+                    description: The unique identifier of the supplier's control task. 
                   controlTaskId:
                     type: integer
                     description: The unique identifier of the control task.
@@ -277,3 +287,58 @@ paths:
           description: Control task not found
         500:
           description: Internal server error
+          
+  /api/legislative_regulations:
+    post:
+      summary: Upload legislative regulation
+      description: Endpoint to upload a legislative regulation file with associated metadata.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The legislative regulation file (PDF/XLSX/DOC).
+                uploadDate:
+                  type: string
+                  format: date
+                  description: The date the regulation was uploaded.
+                documentName:
+                  type: string
+                  description: The name of the legislative document.
+              required:
+                - file
+                - uploadDate
+                - documentName
+      responses:
+        '200':
+          description: Regulation uploaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating that the document was uploaded.
+                  documentDetails:
+                    type: object
+                    properties:
+                      file:
+                        type: string
+                        description: The name of the uploaded file.
+                      uploadDate:
+                        type: string
+                        format: date
+                        description: The date when the file was uploaded.
+                      documentName:
+                        type: string
+                        description: The name of the legislative document.
+        '400':
+          description: Bad request. Missing or invalid data.
+        '500':
+          description: Internal server error.
