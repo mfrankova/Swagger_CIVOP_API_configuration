@@ -3,19 +3,28 @@ info:
   title: CIVOP API
   version: 1.0.0
   description: API for managing control tasks
+  
+  
 
 paths:
-  /api/control_task/{civopControlTaskId}:
+  /api/control_Task:
     post:
       summary: Retrieve details of a specific control task
-      description: Fetches the details of a control task identified by its unique ID.
-      parameters:
-        - name: civopControlTaskId
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: The unique identifier of the control task.
+      description: Fetches the details of a control task based on its unique ID provided in the request body.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: controlTask
+              properties:
+                civopControlTaskId:
+                  type: integer
+                  description: The unique identifier of the supplier's control task.
+                title:
+                  type: string
+                  description: A brief title for the control task.
       responses:
         200:
           description: Successfully retrieved control task details
@@ -23,13 +32,17 @@ paths:
             application/json:
               schema:
                 type: object
+                title: controlTask
                 properties:
-                  civopControlTaskId:
-                    type: integer
-                    description: The unique identifier of the supplier's control task. 
-                  controlTaskId:
+                  id:
                     type: integer
                     description: The unique identifier of the control task.
+                  civopControlTaskId:
+                    type: integer
+                    description: The unique identifier of the supplier's control task.
+                  title:
+                    type: string
+                    description: A brief title for the control task.
                   created_at:
                     type: string
                     format: date-time
@@ -38,6 +51,7 @@ paths:
           description: Control task not found
         500:
           description: Internal server error
+
 
   /api/control_task/{controlTaskId}/document:
     post:
@@ -56,6 +70,7 @@ paths:
           application/json:
             schema:
               type: object
+              title: controlTaskId/document
               properties:
                 filename:
                   type: string
@@ -116,13 +131,20 @@ paths:
             application/json:
               schema:
                 type: object
+                title: controlTaskId/document
                 properties:
-                  message:
-                    type: string
-                    description: Success message indicating that the document was created.
                   createdDocument:
                     type: object
                     properties:                      
+                      id:
+                        type: integer
+                        description: A unique identifier for the document.
+                      controlTaskId:
+                        type: integer
+                        description: The unique identifier of the control task.
+                      message:
+                        type: string
+                        description: Success message indicating that the document was created.
                       filename:
                         type: string
                       contentType:
@@ -180,6 +202,7 @@ paths:
           application/json:
             schema:
               type: object
+              title: controlTaskId/defect
               properties:
                 inspectionDate:
                   type: string
@@ -241,10 +264,17 @@ paths:
             application/json:
               schema:
                 type: object
+                title: controlTaskId/defect
                 properties:
-                  defectId:
+                  id:
                     type: integer
                     description: A unique identifier for the defect.
+                  controlTaskId:
+                    type: integer
+                    description: The unique identifier of the control task.
+                  message:
+                    type: string
+                    description: Success message indicating that the document was created.
                   inspectionDate:
                     type: string
                     format: date
@@ -298,6 +328,7 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              title: legislative_regulations
               properties:
                 file:
                   type: string
@@ -321,6 +352,7 @@ paths:
             application/json:
               schema:
                 type: object
+                title: legislativeRegulations
                 properties:
                   message:
                     type: string
@@ -328,6 +360,9 @@ paths:
                   documentDetails:
                     type: object
                     properties:
+                      id:
+                        type: integer
+                        description: A unique identifier for the legislative regulations.
                       file:
                         type: string
                         description: The name of the uploaded file.
