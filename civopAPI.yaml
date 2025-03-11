@@ -318,3 +318,102 @@ paths:
         500:
           description: Internal server error
           
+  /api/control_task/{controlTaskId}/defect/{defectId}:
+    put:
+      summary: Update an existing defect related to a control task
+      description: Updates an existing defect identified by {defectId} within a control task identified by {controlTaskId}.
+      parameters:
+        - name: controlTaskId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the control task containing the defect.
+        - name: defectId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the defect to be updated.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: UpdateDefect
+              required:
+                - defectCode
+                - inspectionDate
+                - branch
+                - establishment
+                - specialist
+                - responsiblePerson
+                - severity
+              properties:
+                inspectionDate:
+                  type: string
+                  format: date
+                  description: The updated date of the inspection for the defect.
+                branch:
+                  type: string
+                  description: The updated branch where the defect was identified.
+                establishment:
+                  type: string
+                  description: The updated establishment where the defect was found.
+                specialist:
+                  type: string
+                  description: The updated specialist responsible for the defect.
+                responsiblePerson:
+                  type: string
+                  description: The updated person responsible for addressing the defect.
+                severity:
+                  type: string
+                  description: The updated severity level of the defect.
+                repeated:
+                  type: boolean
+                  description: Indicates if the defect is a repeated issue.
+                repeatedFrom:
+                  type: string
+                  format: date
+                  description: The updated date from which the defect was repeated, if applicable.
+                defectCode:
+                  type: string
+                  description: The unique code identifying the defect.
+                description:
+                  type: string
+                  description: The updated detailed description of the defect.
+                note:
+                  type: string
+                  description: Additional updated notes related to the defect.
+                defectDeadline:
+                  type: string
+                  format: date
+                  description: The updated deadline for fixing the defect.
+      responses:
+        200:
+          description: Defect successfully updated
+          content:
+            application/json:
+              schema:
+                type: object
+                title: UpdatedDefectResponse
+                properties:
+                  id:
+                    type: integer
+                    description: The unique identifier of the defect.
+                  controlTaskId:
+                    type: integer
+                    description: The unique identifier of the control task.
+                  defectId:
+                    type: integer
+                    description: The unique defect ID.
+                  message:
+                    type: string
+                    description: Success message indicating the defect was updated.
+        400:
+          description: Invalid input data
+        404:
+          description: Defect or control task not found
+        500:
+          description: Internal server error       
