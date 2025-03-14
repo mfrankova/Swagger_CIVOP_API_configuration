@@ -17,7 +17,7 @@ paths:
           application/json:
             schema:
               type: object
-              title: controlTask
+              title: ControlTask
               properties:
                 civopControlTaskId:
                   type: integer
@@ -32,7 +32,7 @@ paths:
             application/json:
               schema:
                 type: object
-                title: controlTask
+                title: ControlTask
                 properties:
                   id:
                     type: integer
@@ -70,7 +70,7 @@ paths:
           application/json:
             schema:
               type: object
-              title: controlTaskId/document
+              title: Document
               properties:
                 filename:
                   type: string
@@ -131,7 +131,7 @@ paths:
             application/json:
               schema:
                 type: object
-                title: controlTaskId/document
+                title: Document
                 properties:
                   createdDocument:
                     type: object
@@ -202,7 +202,7 @@ paths:
           application/json:
             schema:
               type: object
-              title: controlTaskId/defect
+              title: Defect
               properties:
                 inspectionDate:
                   type: string
@@ -264,7 +264,7 @@ paths:
             application/json:
               schema:
                 type: object
-                title: controlTaskId/defect
+                title: Defect
                 properties:
                   id:
                     type: integer
@@ -341,80 +341,119 @@ paths:
           application/json:
             schema:
               type: object
-              title: UpdateDefect
-              required:
-                - defectCode
-                - inspectionDate
-                - branch
-                - establishment
-                - specialist
-                - responsiblePerson
-                - severity
+              title: Defect
               properties:
                 inspectionDate:
                   type: string
                   format: date
-                  description: The updated date of the inspection for the defect.
+                  description: The date of the inspection for the defect.
                 branch:
                   type: string
-                  description: The updated branch where the defect was identified.
+                  description: The branch where the defect was identified.
                 establishment:
                   type: string
-                  description: The updated establishment where the defect was found.
+                  description: The establishment where the defect was found.
                 specialist:
                   type: string
-                  description: The updated specialist responsible for the defect.
+                  description: The specialist responsible for the defect.
                 responsiblePerson:
                   type: string
-                  description: The updated person responsible for addressing the defect.
+                  description: The person responsible for addressing the defect.
                 severity:
                   type: string
-                  description: The updated severity level of the defect.
+                  description: The severity level of the defect.
                 repeated:
                   type: boolean
                   description: Indicates if the defect is a repeated issue.
                 repeatedFrom:
                   type: string
                   format: date
-                  description: The updated date from which the defect was repeated, if applicable.
+                  description: The date from which the defect was repeated, if applicable.
                 defectCode:
                   type: string
-                  description: The unique code identifying the defect.
+                  description: The code for the defect.
                 description:
                   type: string
-                  description: The updated detailed description of the defect.
+                  description: The detailed description of the defect.
                 note:
                   type: string
-                  description: Additional updated notes related to the defect.
+                  description: Additional notes related to the defect.
                 defectDeadline:
                   type: string
                   format: date
-                  description: The updated deadline for fixing the defect.
+                  description: The deadline for fixing the defect.
+                pictures:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                        description: The filename of the image.
+                      contentType:
+                        type: string
+                        description: The MIME type of the image.
+                      base64Data:
+                        type: string
+                        description: Base64 encoded image data.
       responses:
         200:
-          description: Defect successfully updated
+          description: Defect successfully created
           content:
             application/json:
               schema:
                 type: object
-                title: UpdatedDefectResponse
+                title: Defect
                 properties:
                   id:
                     type: integer
-                    description: The unique identifier of the defect.
+                    description: A unique identifier for the defect.
                   controlTaskId:
                     type: integer
                     description: The unique identifier of the control task.
-                  defectId:
-                    type: integer
-                    description: The unique defect ID.
                   message:
                     type: string
-                    description: Success message indicating the defect was updated.
+                    description: Success message indicating that the document was created.
+                  inspectionDate:
+                    type: string
+                    format: date
+                  branch:
+                    type: string
+                  establishment:
+                    type: string
+                  specialist:
+                    type: string
+                  responsiblePerson:
+                    type: string
+                  severity:
+                    type: string
+                  repeated:
+                    type: boolean
+                  repeatedFrom:
+                    type: string
+                    format: date
+                  defectCode:
+                    type: string
+                  description:
+                    type: string
+                  note:
+                    type: string
+                  defectDeadline:
+                    type: string
+                    format: date
+                  pictures:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        filename:
+                          type: string
+                        contentType:
+                          type: string
         400:
           description: Invalid input data
         404:
-          description: Defect or control task not found
+          description: Control task not found
         500:
           description: Internal server error       
     get:
