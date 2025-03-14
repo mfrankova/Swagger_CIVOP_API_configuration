@@ -417,3 +417,74 @@ paths:
           description: Defect or control task not found
         500:
           description: Internal server error       
+    get:
+          summary: Get details of a specific defect
+          description: Retrieves details of a specific defect identified by {defectId} within a control task identified by {controlTaskId}.
+          parameters:
+            - name: controlTaskId
+              in: path
+              required: true
+              schema:
+                type: integer
+              description: The unique identifier of the control task containing the defect.
+            - name: defectId
+              in: path
+              required: true
+              schema:
+                type: integer
+              description: The unique identifier of the defect.
+          responses:
+            200:
+              description: Successfully retrieved defect details
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    title: DefectDetailsResponse
+                    properties:
+                      id:
+                        type: integer
+                        description: The unique identifier of the defect.
+                      controlTaskId:
+                        type: integer
+                        description: The unique identifier of the control task.
+                      inspectionDate:
+                        type: string
+                        format: date
+                      branch:
+                        type: string
+                      establishment:
+                        type: string
+                      specialist:
+                        type: string
+                      responsiblePerson:
+                        type: string
+                      severity:
+                        type: string
+                      repeated:
+                        type: boolean
+                      repeatedFrom:
+                        type: string
+                        format: date
+                      defectCode:
+                        type: string
+                      description:
+                        type: string
+                      note:
+                        type: string
+                      defectDeadline:
+                        type: string
+                        format: date
+                      pictures:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            filename:
+                              type: string
+                            contentType:
+                              type: string
+            404:
+              description: Defect not found
+            500:
+              description: Internal server error        
