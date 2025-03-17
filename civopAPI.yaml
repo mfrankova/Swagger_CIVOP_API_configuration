@@ -382,23 +382,9 @@ paths:
                   type: string
                   format: date
                   description: The deadline for fixing the defect.
-                pictures:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      filename:
-                        type: string
-                        description: The filename of the image.
-                      contentType:
-                        type: string
-                        description: The MIME type of the image.
-                      base64Data:
-                        type: string
-                        description: Base64 encoded image data.
       responses:
         200:
-          description: Defect successfully created
+          description: Defect successfully updated
           content:
             application/json:
               schema:
@@ -413,7 +399,7 @@ paths:
                     description: The unique identifier of the control task.
                   message:
                     type: string
-                    description: Success message indicating that the document was created.
+                    description: Success message indicating that the defect was updated.
                   inspectionDate:
                     type: string
                     format: date
@@ -441,21 +427,12 @@ paths:
                   defectDeadline:
                     type: string
                     format: date
-                  pictures:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        filename:
-                          type: string
-                        contentType:
-                          type: string
         400:
           description: Invalid input data
         404:
           description: Control task not found
         500:
-          description: Internal server error       
+          description: Internal server error      
     get:
           summary: Get details of a specific defect
           description: Retrieves details of a specific defect identified by {defectId} within a control task identified by {controlTaskId}.
