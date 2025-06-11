@@ -47,8 +47,7 @@ paths:
                     type: string
                     format: date-time
                     description: The timestamp when the control task was created.
-        404:
-          description: Control task not found
+       
         500:
           description: Internal server error
 
