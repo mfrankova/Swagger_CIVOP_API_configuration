@@ -145,9 +145,7 @@ paths:
                         type: string
                         description: Success message indicating that the document was created.
                       filename:
-                        type: string
-                      contentType:
-                        type: string
+                        type: string                      
                       specialist:
                         type: string
                       inspectionDate:
@@ -166,8 +164,7 @@ paths:
                           properties:
                             filename:
                               type: string
-                            contentType:
-                              type: string
+                           
                       additionalDocuments:
                         type: array
                         items:
@@ -175,12 +172,7 @@ paths:
                           properties:
                             filename:
                               type: string
-                            contentType:
-                              type: string
-        400:
-          description: Invalid input data
-        404:
-          description: Control task not found
+                                  
         500:
           description: Internal server error
 
