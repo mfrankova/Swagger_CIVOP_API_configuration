@@ -52,7 +52,7 @@ paths:
           description: Internal server error
 
 
-  /api/control_task/{controlTaskId}/document:
+   /api/control_task/{controlTaskId}/document:
     post:
       summary: Create a new document related to a control task
       description: Create a new document for the given control task identified by {controlTaskId}.
@@ -70,6 +70,10 @@ paths:
             schema:
               type: object
               title: Document
+              required:
+                - filename
+                - contentType
+                - base64Data
               properties:
                 filename:
                   type: string
@@ -91,14 +95,18 @@ paths:
                   type: integer
                   description: The total number of defects found during the inspection.
                 codesOfDefects:
-                    type: array
-                    items:
-                      type: integer
-                    description: A list of codes identifying the defects found.
+                  type: array
+                  items:
+                    type: integer
+                  description: A list of codes identifying the defects found.
                 pictures:
                   type: array
                   items:
                     type: object
+                    required:
+                      - filename
+                      - contentType
+                      - base64Data
                     properties:
                       filename:
                         type: string
@@ -113,6 +121,10 @@ paths:
                   type: array
                   items:
                     type: object
+                    required:
+                      - filename
+                      - contentType
+                      - base64Data
                     properties:
                       filename:
                         type: string
@@ -124,39 +136,43 @@ paths:
                         type: string
                         description: Base64 encoded additional document data.
       responses:
-        200:
+        '200':
           description: Document successfully created
           content:
             application/json:
               schema:
                 type: object
-                title: Document
                 properties:
                   createdDocument:
                     type: object
-                    properties:                      
+                    properties:
                       id:
                         type: integer
-                        description: A unique identifier for the document.
+                        description: A unique identifier for the document. (e.g., ID from SharePoint item)
                       controlTaskId:
                         type: integer
-                        description: The unique identifier of the control task.
+                        description: The unique identifier of the related control task.
                       message:
                         type: string
-                        description: Success message indicating that the document was created.
+                        example: Document was created successfully.
                       filename:
-                        type: string                      
+                        type: string
+                        description: The name of the file stored (from Create_file_documentFromInspection).
                       specialist:
                         type: string
+                        description: Person responsible for the document.
                       inspectionDate:
                         type: string
                         format: date
+                        description: The date when the inspection was performed.
                       numberOfDefects:
                         type: integer
+                        description: Total number of defects from inspection.
                       codesOfDefects:
                         type: array
                         items:
                           type: integer
+                        description: List of defect codes extracted from the item.
                       pictures:
                         type: array
                         items:
@@ -164,7 +180,9 @@ paths:
                           properties:
                             filename:
                               type: string
-                           
+                            contentType:
+                              type: string
+                        description: List of uploaded pictures associated with the inspection.
                       additionalDocuments:
                         type: array
                         items:
@@ -172,10 +190,12 @@ paths:
                           properties:
                             filename:
                               type: string
-                                  
-        500:
+                            contentType:
+                              type: string
+                        description: Additional documents uploaded together with the inspection.
+  
+        '500':
           description: Internal server error
-
   /api/control_task/{controlTaskId}/defect:
     post:
       summary: Create a new defect related to a control task
