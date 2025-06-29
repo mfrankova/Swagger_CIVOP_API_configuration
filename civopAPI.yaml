@@ -195,6 +195,9 @@ paths:
               type: object
               title: Defect
               properties:
+                title:
+                  type: string
+                  description: The title of the inspection for the defect.
                 inspectionDate:
                   type: string
                   format: date
