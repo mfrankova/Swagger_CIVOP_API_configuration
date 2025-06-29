@@ -245,7 +245,7 @@ paths:
                   format: date
                   description: The date from which the defect was repeated, if applicable.
                 defectCode:
-                  type: string
+                  type: integer
                   description: The code for the defect.
                 description:
                   type: string
