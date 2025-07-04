@@ -3,61 +3,87 @@ info:
   title: CIVOP API
   version: 1.0.0
   description: API for managing control tasks
-  
-  
 
 paths:
-  /api/control_Task:
+  /api/document:
     post:
-      summary: Create an internal ID for a control task based on the supplier's task details.
-      description: Accepts a supplier's task ID and title to generate and return a new internal task ID for creating related documents and defects.
+      summary: Creates a control record, saving results and generating unique documentId.
+      description: >
+        Accepts a supplier's task civopControlTaskID and title, generates a unique internal control task identifier `documentId`, and returns it for use in creating related documents and recording potential defects.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              title: ControlTask
+              required:
+                - civopControlTaskId
+                - title
+                - filename
+                - contentType
+                - base64Data
               properties:
                 civopControlTaskId:
                   type: integer
-                  description: The unique identifier of the supplier's control task.
                 title:
                   type: string
-                  description: A brief title for the control task.
+                specialist:
+                  type: string
+                inspectionDate:
+                  type: string
+                  format: date
+                numberOfDefects:
+                  type: integer
+                codesOfDefects:
+                  type: array
+                  items:
+                    type: integer
+                filename:
+                  type: string
+                contentType:
+                  type: string
+                base64Data:
+                  type: string
       responses:
-        200:
-          description: Successfully retrieved control task details
+        '200':
+          description: Successfully created control task and document.
           content:
             application/json:
               schema:
                 type: object
-                title: ControlTask
                 properties:
                   id:
                     type: integer
-                    description: The unique identifier of the control task.
                   civopControlTaskId:
                     type: integer
-                    description: The unique identifier of the supplier's control task.
                   title:
                     type: string
-                    description: A brief title for the control task.
                   created_at:
                     type: string
                     format: date-time
-                    description: The timestamp when the control task was created.
-       
-        500:
-          description: Internal server error
+                  specialist:
+                    type: string
+                  inspectionDate:
+                    type: string
+                    format: date
+                  numberOfDefects:
+                    type: integer
+                  codesOfDefects:
+                    type: array
+                    items:
+                      type: integer
+                  filename:
+                    type: string
+                  contentType:
+                    type: string
+        '500':
+          description: Server error while processing the control task.
 
-
-   /api/control_task/{controlTaskId}/document:
+  /api/document/{documentId}/additionalDocument:
     post:
       summary: Create a new document related to a control task
-      description: Create a new document for the given control task identified by {controlTaskId}.
       parameters:
-        - name: controlTaskId
+        - name: documentId
           in: path
           required: true
           schema:
@@ -69,7 +95,6 @@ paths:
           application/json:
             schema:
               type: object
-              title: Document
               required:
                 - filename
                 - contentType
@@ -77,131 +102,86 @@ paths:
               properties:
                 filename:
                   type: string
-                  description: The filename of the document to be added.
                 contentType:
                   type: string
-                  description: The content type of the document (e.g., application/pdf, image/jpeg).
                 base64Data:
                   type: string
-                  description: The base64 encoded content of the document.
-                specialist:
-                  type: string
-                  description: The specialist associated with the document.
-                inspectionDate:
-                  type: string
-                  format: date
-                  description: The date of the inspection.
-                numberOfDefects:
-                  type: integer
-                  description: The total number of defects found during the inspection.
-                codesOfDefects:
-                  type: array
-                  items:
-                    type: integer
-                  description: A list of codes identifying the defects found.
-                pictures:
-                  type: array
-                  items:
-                    type: object
-                    required:
-                      - filename
-                      - contentType
-                      - base64Data
-                    properties:
-                      filename:
-                        type: string
-                        description: The filename of the image.
-                      contentType:
-                        type: string
-                        description: The MIME type of the image.
-                      base64Data:
-                        type: string
-                        description: Base64 encoded image data.
-                additionalDocuments:
-                  type: array
-                  items:
-                    type: object
-                    required:
-                      - filename
-                      - contentType
-                      - base64Data
-                    properties:
-                      filename:
-                        type: string
-                        description: The filename of the additional document.
-                      contentType:
-                        type: string
-                        description: The MIME type of the additional document.
-                      base64Data:
-                        type: string
-                        description: Base64 encoded additional document data.
       responses:
         '200':
-          description: Document successfully created
+          description: Document successfully created and attached to the control task.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  createdDocument:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        description: A unique identifier for the document. (e.g., ID from SharePoint item)
-                      controlTaskId:
-                        type: integer
-                        description: The unique identifier of the related control task.
-                      message:
-                        type: string
-                        example: Document was created successfully.
-                      filename:
-                        type: string
-                        description: The name of the file stored (from Create_file_documentFromInspection).
-                      specialist:
-                        type: string
-                        description: Person responsible for the document.
-                      inspectionDate:
-                        type: string
-                        format: date
-                        description: The date when the inspection was performed.
-                      numberOfDefects:
-                        type: integer
-                        description: Total number of defects from inspection.
-                      codesOfDefects:
-                        type: array
-                        items:
-                          type: integer
-                        description: List of defect codes extracted from the item.
-                      pictures:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            filename:
-                              type: string
-                            contentType:
-                              type: string
-                        description: List of uploaded pictures associated with the inspection.
-                      additionalDocuments:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            filename:
-                              type: string
-                            contentType:
-                              type: string
-                        description: Additional documents uploaded together with the inspection.
-  
+                  id:
+                    type: integer
+                  documentId:
+                    type: integer
+                  filename:
+                    type: string
+                  contentType:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
         '500':
-          description: Internal server error
-  /api/control_task/{controlTaskId}/defect:
+          description: Server error while saving the document.
+
+  /api/document/{documentId}/picture:
+    post:
+      summary: Create a new picture related to a control task
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the control task to which the picture will be added.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - filename
+                - contentType
+                - base64Data
+              properties:
+                filename:
+                  type: string
+                contentType:
+                  type: string
+                base64Data:
+                  type: string
+      responses:
+        '200':
+          description: Picture successfully created and attached to the control task.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  documentId:
+                    type: integer
+                  filename:
+                    type: string
+                  contentType:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+        '500':
+          description: Server error while saving the picture.
+
+  /api/document/{documentId}/defect:
     post:
       summary: Create a new defect related to a control task
-      description: Create a new defect for the given control task identified by {controlTaskId}.
       parameters:
-        - name: controlTaskId
+        - name: documentId
           in: path
           required: true
           schema:
@@ -213,82 +193,46 @@ paths:
           application/json:
             schema:
               type: object
-              title: Defect
               properties:
                 title:
                   type: string
-                  description: The title of the inspection for the defect.
                 inspectionDate:
                   type: string
                   format: date
-                  description: The date of the inspection for the defect.
                 branch:
                   type: string
-                  description: The branch where the defect was identified.
                 establishment:
                   type: string
-                  description: The establishment where the defect was found.
                 specialist:
                   type: string
-                  description: The specialist responsible for the defect.
                 responsiblePerson:
                   type: string
-                  description: The person responsible for addressing the defect.
                 severity:
                   type: string
-                  description: The severity level of the defect.
                 repeated:
                   type: boolean
-                  description: Indicates if the defect is a repeated issue.
                 repeatedFrom:
                   type: string
                   format: date
-                  description: The date from which the defect was repeated, if applicable.
                 defectCode:
                   type: integer
-                  description: The code for the defect.
                 description:
                   type: string
-                  description: The detailed description of the defect.
                 note:
                   type: string
-                  description: Additional notes related to the defect.
                 defectDeadline:
                   type: string
                   format: date
-                  description: The deadline for fixing the defect.
-                pictures:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      filename:
-                        type: string
-                        description: The filename of the image.
-                      contentType:
-                        type: string
-                        description: The MIME type of the image.
-                      base64Data:
-                        type: string
-                        description: Base64 encoded image data.
       responses:
-        200:
+        '200':
           description: Defect successfully created
           content:
             application/json:
               schema:
                 type: object
-                title: Defect
                 properties:
-                  id:
-                    type: integer
-                    description: A unique identifier for the defect.
-                  controlTaskId:
-                    type: integer
-                    description: The unique identifier of the control task.
-                  message:
+                  title:
                     type: string
-                    description: Success message indicating that the document was created.
                   inspectionDate:
                     type: string
                     format: date
@@ -308,7 +252,7 @@ paths:
                     type: string
                     format: date
                   defectCode:
-                    type: string
+                    type: integer
                   description:
                     type: string
                   note:
@@ -316,104 +260,133 @@ paths:
                   defectDeadline:
                     type: string
                     format: date
-                  pictures:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        filename:
-                          type: string
-                        contentType:
-                          type: string
-        400:
-          description: Invalid input data
-        404:
-          description: Control task not found
-        500:
+        '500':
           description: Internal server error
-          
-  /api/control_task/{controlTaskId}/defect/{defectId}:
-    put:
-      summary: Update an existing defect related to a control task
-      description: Updates an existing defect identified by {defectId} within a control task identified by {controlTaskId}.
+
+  /api/document/{documentId}/defect/{defectId}/picture:
+    post:
+      summary: Add a new picture related to a defect in a control task
       parameters:
-        - name: controlTaskId
+        - name: documentId
           in: path
           required: true
           schema:
             type: integer
-          description: The unique identifier of the control task containing the defect.
         - name: defectId
           in: path
           required: true
           schema:
             type: integer
-          description: The unique identifier of the defect to be updated.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              title: Defect
+              required:
+                - picture
               properties:
+                picture:
+                  type: object
+                  required:
+                    - filename
+                    - contentType
+                    - base64Data
+                  properties:
+                    filename:
+                      type: string
+                    contentType:
+                      type: string
+                    base64Data:
+                      type: string
+      responses:
+        '200':
+          description: Picture successfully added to the defect.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  picture:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                      contentType:
+                        type: string
+                      base64Data:
+                        type: string
+        '500':
+          description: Internal server error
+
+  /api/document/{documentId}/defect/{defectId}:
+    put:
+      summary: Update an existing defect related to a control task
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: defectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
                 inspectionDate:
                   type: string
                   format: date
-                  description: The date of the inspection for the defect.
                 branch:
                   type: string
-                  description: The branch where the defect was identified.
                 establishment:
                   type: string
-                  description: The establishment where the defect was found.
                 specialist:
                   type: string
-                  description: The specialist responsible for the defect.
                 responsiblePerson:
                   type: string
-                  description: The person responsible for addressing the defect.
                 severity:
                   type: string
-                  description: The severity level of the defect.
                 repeated:
                   type: boolean
-                  description: Indicates if the defect is a repeated issue.
                 repeatedFrom:
                   type: string
                   format: date
-                  description: The date from which the defect was repeated, if applicable.
                 defectCode:
-                  type: string
-                  description: The code for the defect.
+                  type: integer
                 description:
                   type: string
-                  description: The detailed description of the defect.
                 note:
                   type: string
-                  description: Additional notes related to the defect.
                 defectDeadline:
                   type: string
                   format: date
-                  description: The deadline for fixing the defect.
       responses:
-        200:
+        '200':
           description: Defect successfully updated
           content:
             application/json:
               schema:
                 type: object
-                title: Defect
                 properties:
                   id:
                     type: integer
-                    description: A unique identifier for the defect.
                   controlTaskId:
                     type: integer
-                    description: The unique identifier of the control task.
                   message:
                     type: string
-                    description: Success message indicating that the defect was updated.
+                  title:
+                    type: string
                   inspectionDate:
                     type: string
                     format: date
@@ -433,7 +406,7 @@ paths:
                     type: string
                     format: date
                   defectCode:
-                    type: string
+                    type: integer
                   description:
                     type: string
                   note:
@@ -441,80 +414,6 @@ paths:
                   defectDeadline:
                     type: string
                     format: date
-        400:
-          description: Invalid input data
-        404:
-          description: Control task not found
-        500:
-          description: Internal server error      
-    get:
-          summary: Get details of a specific defect
-          description: Retrieves details of a specific defect identified by {defectId} within a control task identified by {controlTaskId}.
-          parameters:
-            - name: controlTaskId
-              in: path
-              required: true
-              schema:
-                type: integer
-              description: The unique identifier of the control task containing the defect.
-            - name: defectId
-              in: path
-              required: true
-              schema:
-                type: integer
-              description: The unique identifier of the defect.
-          responses:
-            200:
-              description: Successfully retrieved defect details
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    title: DefectDetailsResponse
-                    properties:
-                      id:
-                        type: integer
-                        description: The unique identifier of the defect.
-                      controlTaskId:
-                        type: integer
-                        description: The unique identifier of the control task.
-                      inspectionDate:
-                        type: string
-                        format: date
-                      branch:
-                        type: string
-                      establishment:
-                        type: string
-                      specialist:
-                        type: string
-                      responsiblePerson:
-                        type: string
-                      severity:
-                        type: string
-                      repeated:
-                        type: boolean
-                      repeatedFrom:
-                        type: string
-                        format: date
-                      defectCode:
-                        type: string
-                      description:
-                        type: string
-                      note:
-                        type: string
-                      defectDeadline:
-                        type: string
-                        format: date
-                      pictures:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            filename:
-                              type: string
-                            contentType:
-                              type: string
-            404:
-              description: Defect not found
-            500:
-              description: Internal server error        
+      
+        '500':
+          description: Internal server error while updating the defect
