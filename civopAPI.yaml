@@ -9,7 +9,7 @@ paths:
     post:
       summary: Creates a control record, saving results and generating unique documentId.
       description: >
-        Accepts a supplier's task civopControlTaskID and title, generates a unique internal control task identifier `documentId`, and returns it for use in creating related documents and recording potential defects.
+        Accepts a supplier's task civopControlTaskId and title, generates a unique internal control task identifier `documentId`, and returns it for use in creating related documents and recording potential defects.
       requestBody:
         required: true
         content:
@@ -231,6 +231,10 @@ paths:
               schema:
                 type: object
                 properties:
+                  id:
+                    type: integer
+                  documentId:
+                    type: integer
                   title:
                     type: string
                   inspectionDate:
@@ -316,8 +320,7 @@ paths:
                         type: string
                       contentType:
                         type: string
-                      base64Data:
-                        type: string
+                     
         '500':
           description: Internal server error
 
@@ -381,7 +384,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                  controlTaskId:
+                  documentId:
                     type: integer
                   message:
                     type: string
@@ -414,6 +417,7 @@ paths:
                   defectDeadline:
                     type: string
                     format: date
-      
+        '404':
+          description: Control task or defect not found
         '500':
           description: Internal server error while updating the defect
