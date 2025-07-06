@@ -67,6 +67,10 @@ paths:
                     format: date-time
                   specialist:
                     type: string
+                  branch:
+                    type: string
+                  establishment:
+                    type: string
                   inspectionDate:
                     type: string
                     format: date
