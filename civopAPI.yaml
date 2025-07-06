@@ -343,6 +343,8 @@ paths:
                         type: string
                       contentType:
                         type: string
+                      created_at:
+                        format: date                     
 
         '500':
           description: Internal server error
