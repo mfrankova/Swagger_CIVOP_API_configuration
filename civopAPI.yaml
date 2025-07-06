@@ -85,15 +85,18 @@ paths:
                   contentType:
                     type: string
         '400':
-          description: Server error while processing the control task.
+          description: Bad Request – Server error while processing the control task.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error: string
-                  message: string
-                  filename: string                   
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  filename:
+                    type: string                
         '500':
           description: Server error while processing the control task.
 
