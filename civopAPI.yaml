@@ -296,12 +296,6 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - picture
-              properties:
-                picture:
-                  type: object
                   required:
                     - filename
                     - contentType
@@ -317,21 +311,23 @@ paths:
         '200':
           description: Picture successfully added to the defect.
           content:
-            application/json:
+             application/json:
               schema:
                 type: object
                 properties:
                   id:
                     type: integer
-                  picture:
-                    type: object
-                    properties:
-                      filename:
-                        type: string
-                      contentType:
-                        type: string
-                      created_at:
-                        format: date                     
+                  defectId:
+                    type: integer
+                  documentId:
+                    type: integer
+                  filename:
+                    type: string
+                  contentType:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time                      
 
         '500':
           description: Internal server error
