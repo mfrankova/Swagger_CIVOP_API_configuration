@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  title: OBELISK Document Storage API
+  version: 1.0.0
+  description: API for storing, retrieving, and managing documents in the OBELISK Trusted Archive
+servers:
+  - url: https://api.obelisk.eu/v1
+    description: Production
+
+paths:
+  /api/storeDocument:
+    post:
+      summary: Store document
+      description: >
+        Stores a new document in the archive. The document can be sent as inline base64 content
+        or via MTOM. It is also possible to provide metadata or use a process identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreDocumentRequest'
+      responses:
+        '200':
+          description: Document was successfully stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreDocumentResponse'
+        '400':
+          description: Invalid request (missing required fields or wrong format)
+        '500':
+          description: Server error while storing the document
+
+  /api/retrieveDocument/{documentId}:
+    get:
+      summary: Retrieve document
+      description: >
+        Retrieves a stored document from the archive by its identifier.  
+        Optionally, only the document metadata can be returned without the content.
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique document identifier
+        - name: metadataOnly
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: If `true`, only document metadata is returned
+      responses:
+        '200':
+          description: Document or metadata successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveDocumentResponse'
+        '404':
+          description: Document not found
+        '500':
+          description: Server error while retrieving the document
+
+  /api/updateMetadata/{documentId}:
+    put:
+      summary: Update document metadata
+      description: >
+        Allows updating the metadata of a previously stored document.
+        The document content remains unchanged; only metadata is updated.
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique document identifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMetadataRequest'
+      responses:
+        '200':
+          description: Document metadata successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMetadataResponse'
+        '400':
+          description: Invalid request (e.g., missing metadata)
+        '404':
+          description: Document not found
+        '500':
+          description: Server error while updating metadata
+
+  /api/repositoryFunction:
+    post:
+      summary: Execute repository function
+      description: >
+        Executes repository-specific functions, such as triggering an event
+        or processing by a given `processId`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepositoryFunctionRequest'
+      responses:
+        '200':
+          description: Repository function successfully executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryFunctionResponse'
+        '400':
+          description: Invalid request (e.g., missing processId)
+        '500':
+          description: Server error while executing repository function
+
+  /api/removeDocument/{documentId}:
+    delete:
+      summary: Remove document
+      description: >
+        Permanently removes a document from the archive by its identifier.
+        This operation is irreversible.
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique document identifier
+        - name: processId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Optional process identifier, if removal is part of a larger batch
+      responses:
+        '200':
+          description: Document was successfully removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoveDocumentResponse'
+        '404':
+          description: Document not found
+        '500':
+          description: Server error while removing the document
+
+  /api/documentBatch:
+    post:
+      summary: Store or remove multiple documents in batch
+      description: >
+        Allows batch operations with documents – e.g., store multiple documents at once
+        or remove a group of do
