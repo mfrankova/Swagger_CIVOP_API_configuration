@@ -1,0 +1,547 @@
+openapi: 3.0.0
+info:
+  title: OBELISK Document Storage API
+  version: 1.0.0
+  description: API for storing, retrieving and managing documents in OBELISK Trusted Archive
+servers:
+  - url: https://api.obelisk.eu/v1
+    description: Production
+
+paths:
+  /api/storeDocument:
+    post:
+      summary: Store document
+      description: >
+        Uloží nový dokument do archivu. Dokument lze poslat jako inline base64 obsah,
+        nebo pomocí MTOM. Je možné předat také metadata nebo použít procesní identifikátor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreDocumentRequest'
+      responses:
+        '200':
+          description: Dokument byl úspěšně uložen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreDocumentResponse'
+        '400':
+          description: Neplatný požadavek (chybí povinná pole nebo špatný formát)
+        '500':
+          description: Chyba serveru při ukládání dokumentu
+
+  /api/retrieveDocument/{documentId}:
+    get:
+      summary: Retrieve document
+      description: >
+        Získá uložený dokument z archivu podle jeho identifikátoru.
+        Volitelně je možné vrátit pouze metadata dokumentu bez samotného obsahu.
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Jedinečný identifikátor dokumentu
+        - name: metadataOnly
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Pokud je `true`, vrátí se pouze metadata dokumentu
+      responses:
+        '200':
+          description: Dokument nebo metadata úspěšně načtena
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveDocumentResponse'
+        '404':
+          description: Dokument nebyl nalezen
+        '500':
+          description: Chyba serveru při načítání dokumentu
+
+  /api/updateMetadata/{documentId}:
+    put:
+      summary: Update document metadata
+      description: >
+        Umožňuje aktualizaci metadat již uloženého dokumentu v archivu.
+        Obsah dokumentu zůstává beze změny, mění se pouze přidružená metadata.
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Jedinečný identifikátor dokumentu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMetadataRequest'
+      responses:
+        '200':
+          description: Metadata dokumentu byla úspěšně aktualizována
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMetadataResponse'
+        '400':
+          description: Neplatný požadavek (např. chybí metadata)
+        '404':
+          description: Dokument nebyl nalezen
+        '500':
+          description: Chyba serveru při aktualizaci metadat
+
+  /api/repositoryFunction:
+    post:
+      summary: Execute repository function
+      description: >
+        Umožňuje spustit specifické funkce repozitáře, například trigger události
+        nebo zpracování podle zadaného `processId`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepositoryFunctionRequest'
+      responses:
+        '200':
+          description: Funkce repozitáře úspěšně provedena
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryFunctionResponse'
+        '400':
+          description: Neplatný požadavek (např. chybí processId)
+        '500':
+          description: Chyba serveru při volání funkce repozitáře
+
+  /api/removeDocument/{documentId}:
+    delete:
+      summary: Remove document
+      description: >
+        Odstraní dokument z archivu podle jeho identifikátoru.
+        Operace je nevratná – dokument bude trvale smazán.
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Jedinečný identifikátor dokumentu
+        - name: processId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Volitelný identifikátor procesu, pokud je mazání součástí větší dávky
+      responses:
+        '200':
+          description: Dokument byl úspěšně odstraněn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoveDocumentResponse'
+        '404':
+          description: Dokument nebyl nalezen
+        '500':
+          description: Chyba serveru při odstraňování dokumentu
+
+  /api/documentBatch:
+    post:
+      summary: Store or remove multiple documents in batch
+      description: >
+        Umožňuje dávkové operace s dokumenty – např. uložit více dokumentů najednou
+        nebo odstranit skupinu dokumentů v jednom požadavku.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentBatchRequest'
+      responses:
+        '200':
+          description: Dávka dokumentů byla úspěšně zpracována
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentBatchResponse'
+        '400':
+          description: Neplatný požadavek (chybná struktura dávky)
+        '500':
+          description: Chyba serveru při zpracování dávky
+
+  /api/asyncDocumentBatch:
+    post:
+      summary: Start asynchronous batch operation
+      description: >
+        Spustí asynchronní dávku operací s dokumenty (uložení nebo odstranění).
+        Odpověď obsahuje pouze identifikátor dávky. Stav a výsledky lze později
+        získat pomocí endpointu `/api/batchInfo`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentBatchRequest'
+      responses:
+        '202':
+          description: Dávka byla přijata ke zpracování
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncBatchAccepted'
+        '400':
+          description: Neplatný požadavek (chybná struktura dávky)
+        '500':
+          description: Chyba serveru při inicializaci dávky
+
+  /api/batchInfo/{batchId}:
+    get:
+      summary: Get information about a batch
+      description: >
+        Vrátí detailní informace o zadané dávce dokumentů.
+        Je možné filtrovat výsledky pomocí `errorsScope`, aby se vrátily pouze chybné položky.
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifikátor dávky
+        - name: errorsScope
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Pokud je `true`, vrátí se pouze chybné položky z dávky
+      responses:
+        '200':
+          description: Informace o dávce byla úspěšně načtena
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchInfoResponse'
+        '404':
+          description: Dávka nebyla nalezena
+        '500':
+          description: Chyba serveru při získávání informací o dávce
+
+  /api/callback:
+    post:
+      summary: Receive callback events from OBELISK
+      description: >
+        Webhook pro příjem událostí z OBELISK (např. uložení dokumentu, validace, reporty).
+        Požadavek je podepsán pomocí X-SP-signature a časově označen X-SP-timestamp.
+      tags:
+        - Webhook
+      parameters:
+        - in: header
+          name: X-SP-signature
+          required: false
+          schema:
+            type: string
+            format: hex
+          example: 247a28a2cc922a42e8f8001802ce37f3f9852bdfbd824f96ec49d9414db23628
+          description: |
+            HMAC SHA-256 celé zprávy. Podpis se vytváří spojením `X-SP-timestamp` a JSON payloadu tečkou
+            (tj. `X-SP-timestamp.json_payload`) a následným HMAC SHA-256 se sdíleným tajemstvím.
+            Posílá se jen pokud je sdílené tajemství nakonfigurováno.
+        - in: header
+          name: X-SP-timestamp
+          required: false
+          schema:
+            type: integer
+            format: int64
+          example: 1673622371853
+          description: Časové razítko požadavku v milisekundách od epochy.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CallbackEvent'
+      responses:
+        '200':
+          description: Událost úspěšně přijata a akceptována
+
+components:
+  schemas:
+    StoreDocumentRequest:
+      type: object
+      required:
+        - filename
+        - contentType
+        - base64Data
+      properties:
+        filename:
+          type: string
+          example: contract.pdf
+        contentType:
+          type: string
+          example: application/pdf
+        base64Data:
+          type: string
+          format: byte
+          description: Dokument zakódovaný v base64
+        processId:
+          type: string
+          description: Identifikátor procesu, pokud je dokument součástí dávky
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Volitelná metadata
+    StoreDocumentResponse:
+      type: object
+      properties:
+        documentId:
+          type: string
+          example: "12345-ABCDE"
+        status:
+          type: string
+          example: stored
+
+    RetrieveDocumentResponse:
+      type: object
+      properties:
+        documentId:
+          type: string
+          example: "12345-ABCDE"
+        filename:
+          type: string
+          example: contract.pdf
+        contentType:
+          type: string
+          example: application/pdf
+        base64Data:
+          type: string
+          format: byte
+          description: Obsah dokumentu v base64 (pokud není metadataOnly=true)
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    UpdateMetadataRequest:
+      type: object
+      required:
+        - metadata
+      properties:
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Nová/aktualizovaná metadata
+    UpdateMetadataResponse:
+      type: object
+      properties:
+        documentId:
+          type: string
+          example: "12345-ABCDE"
+        status:
+          type: string
+          example: metadata updated
+
+    RepositoryFunctionRequest:
+      type: object
+      properties:
+        processId:
+          type: string
+        triggerEvent:
+          type: string
+      example:
+        processId: "proc-12345"
+        triggerEvent: "validateDocument"
+    RepositoryFunctionResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Repository function executed
+
+    RemoveDocumentResponse:
+      type: object
+      properties:
+        documentId:
+          type: string
+        status:
+          type: string
+          example: removed
+
+    DocumentBatchRequest:
+      type: object
+      required:
+        - operations
+      properties:
+        operations:
+          type: array
+          description: Seznam operací v dávce (uložení, odstranění)
+          items:
+            type: object
+            required:
+              - action
+              - document
+            properties:
+              action:
+                type: string
+                enum: [store, remove]
+              document:
+                type: object
+                properties:
+                  documentId:
+                    type: string
+                    description: Povinné pro akci `remove`
+                  filename:
+                    type: string
+                    description: Povinné pro akci `store`
+                  contentType:
+                    type: string
+                  base64Data:
+                    type: string
+                    format: byte
+                  metadata:
+                    type: object
+                    additionalProperties:
+                      type: string
+
+    DocumentBatchResponse:
+      type: object
+      properties:
+        batchId:
+          type: string
+          example: "batch-78910"
+        status:
+          type: string
+          example: completed
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              documentId:
+                type: string
+              action:
+                type: string
+              status:
+                type: string
+              errorMessage:
+                type: string
+                nullable: true
+
+    AsyncBatchAccepted:
+      type: object
+      properties:
+        batchId:
+          type: string
+          example: "async-batch-12345"
+        status:
+          type: string
+          example: accepted
+
+    BatchInfoResponse:
+      type: object
+      properties:
+        batchId:
+          type: string
+          example: "batch-78910"
+        status:
+          type: string
+          example: completed
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              documentId:
+                type: string
+              action:
+                type: string
+                enum: [store, remove]
+              status:
+                type: string
+                example: success
+              errorMessage:
+                type: string
+                nullable: true
+
+    # Callback (webhook) event model dle tvého vzoru
+    CallbackEvent:
+      type: object
+      properties:
+        eventType:
+          $ref: '#/components/schemas/EventType'
+        eventOrder:
+          type: integer
+          format: int32
+          description: Logické pořadí události; může dorazit novější a poté starší.
+        flowId:
+          type: integer
+          format: int64
+          description: ID flow, kterého se událost týká.
+        flowHref:
+          type: string
+          description: URL flow.
+        flowState:
+          $ref: '#/components/schemas/FlowState'
+        currentPhase:
+          type: integer
+          format: int32
+          description: Aktivní fáze zpracování (stepOrder).
+      discriminator:
+        propertyName: eventType
+        mapping:
+          flowStateChanged: '#/components/schemas/FlowStateChangedEvent'
+          phaseChanged: '#/components/schemas/PhaseChangedEvent'
+          stepFinished: '#/components/schemas/StepFinishedEvent'
+          flowCreated: '#/components/schemas/FlowCreatedEvent'
+          flowDeleted: '#/components/schemas/FlowDeletedEvent'
+      oneOf:
+        - $ref: '#/components/schemas/FlowStateChangedEvent'
+        - $ref: '#/components/schemas/PhaseChangedEvent'
+        - $ref: '#/components/schemas/StepFinishedEvent'
+        - $ref: '#/components/schemas/FlowCreatedEvent'
+        - $ref: '#/components/schemas/FlowDeletedEvent'
+      required:
+        - eventType
+        - eventOrder
+        - flowId
+        - flowState
+        - flowHref
+
+    FlowStateChangedEvent:
+      type: object
+      description: Změna stavu flow (dokončení, zrušení).
+    PhaseChangedEvent:
+      type: object
+      description: Změna fáze zpracování (úspěšné dokončení paralelních kroků se stejným pořadím).
+    StepFinishedEvent:
+      type: object
+      description: Úspěšné dokončení konkrétního kroku.
+      properties:
+        stepId:
+          type: number
+          description: Id dokončeného kroku
+    FlowCreatedEvent:
+      type: object
+      description: Flow vytvořeno.
+    FlowDeletedEvent:
+      type: object
+      description: Flow smazáno.
+
+    FlowState:
+      type: string
+      description: Stav flow **po** události.
+      enum: [draft, active, finished, recalled, rejected]
+
+    EventType:
+      type: string
+      description: Typ události. Určuje, která pole jsou ve zprávě přítomna.
+      enum: [flowStateChanged, phaseChanged, stepFinished, flowCreated, flowDeleted]
