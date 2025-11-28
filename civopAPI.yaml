@@ -38,6 +38,8 @@ paths:
                   format: date
                 repeatedYN:
                   type: boolean
+                periodInMonths:
+                  type: integer
                 numberOfDefects:
                   type: integer
                 codesOfDefects:
