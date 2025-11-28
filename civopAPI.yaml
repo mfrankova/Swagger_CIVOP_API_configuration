@@ -36,6 +36,8 @@ paths:
                 inspectionDate:
                   type: string
                   format: date
+                repeatedYN:
+                  type: boolean
                 numberOfDefects:
                   type: integer
                 codesOfDefects:
