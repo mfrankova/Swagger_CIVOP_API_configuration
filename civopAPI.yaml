@@ -5,7 +5,7 @@ info:
   description: API for managing control tasks
 
 paths:
-  /api/document:
+  /document:
     post:
       summary: Creates a control record, saving results and generating unique documentId.
       description: >
@@ -90,7 +90,7 @@ paths:
         '500':
           description: Server error while processing the control task.
 
-  /api/document/{documentId}/additionalDocument:
+  /document/{documentId}/additionalDocument:
     post:
       summary: Create a new document related to a control task
       parameters:
@@ -139,7 +139,7 @@ paths:
         '500':
           description: Server error while saving the document.
 
-  /api/document/{documentId}/picture:
+  /document/{documentId}/picture:
     post:
       summary: Create a new picture related to a control task
       parameters:
@@ -189,7 +189,7 @@ paths:
         '500':
           description: Server error while saving the picture.
 
-  /api/document/{documentId}/defect:
+  /document/{documentId}/defect:
     post:
       summary: Create a new defect related to a control task
       parameters:
@@ -279,7 +279,7 @@ paths:
         '500':
           description: Internal server error
 
-  /api/document/{documentId}/defect/{defectId}/picture:
+  /document/{documentId}/defect/{defectId}/picture:
     post:
       summary: Add a new picture related to a defect in a control task
       parameters:
@@ -334,7 +334,7 @@ paths:
         '500':
           description: Internal server error
 
-  /api/document/{documentId}/defect/{defectId}:
+  /document/{documentId}/defect/{defectId}:
     put:
       summary: Update an existing defect related to a control task
       parameters:
