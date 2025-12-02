@@ -35,7 +35,9 @@ paths:
                   type: string
                 inspectionDate:
                   type: string
-                  format: date          
+                  format: date
+                interval:
+                  type: integer
                 numberOfDefects:
                   type: integer
                 codesOfDefects:
