@@ -60,6 +60,13 @@ paths:
                 properties:
                   id:
                     type: integer
+                    description:  Defect ID (same as defectId when not archived)
+                  archived:
+                    type: boolean
+                  archivedId:
+                    type: integer
+                    nullable: true
+                    description: ID of the archived row, present only when archived=true
                   civopControlTaskId:
                     type: integer
                   title:
