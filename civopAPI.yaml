@@ -59,14 +59,7 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: integer
-                    description:  Defect ID (same as defectId when not archived)
-                  archived:
-                    type: boolean
-                  archivedId:
-                    type: integer
-                    nullable: true
-                    description: ID of the archived row, present only when archived=true
+                    type: integer                
                   civopControlTaskId:
                     type: integer
                   title:
@@ -405,10 +398,15 @@ paths:
                 properties:
                   id:
                     type: integer
-                  documentId:
+                    description:  Defect ID (same as defectId when not archived)
+                  archived:
+                    type: boolean
+                  archivedId:
                     type: integer
-                  message:
-                    type: string
+                    nullable: true
+                    description: ID of the archived row, present only when archived=true
+                  documentId:
+                    type: integer                    
                   title:
                     type: string
                   inspectionDate:
