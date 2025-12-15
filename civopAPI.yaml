@@ -142,6 +142,8 @@ paths:
                     format: date-time      
         '500':
           description: Server error while saving the document.
+        '400':
+          description: Bad request.
 
   /document/{documentId}/picture:
     post:
@@ -192,6 +194,8 @@ paths:
 
         '500':
           description: Server error while saving the picture.
+        '400':
+          description: Bad request.
 
   /document/{documentId}/defect:
     post:
@@ -282,6 +286,8 @@ paths:
                     format: date
         '500':
           description: Internal server error
+        '400':
+          description: Bad request.
 
   /document/{documentId}/defect/{defectId}/picture:
     post:
@@ -337,6 +343,8 @@ paths:
 
         '500':
           description: Internal server error
+        '400':
+          description: Bad request.
 
   /document/{documentId}/defect/{defectId}:
     put:
@@ -439,3 +447,5 @@ paths:
      
         '500':
           description: Internal server error while updating the defect
+        '400':
+          description: Bad request.
