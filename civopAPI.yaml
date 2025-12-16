@@ -63,10 +63,7 @@ paths:
                   civopControlTaskId:
                     type: integer
                   title:
-                    type: string
-                  created_at:
-                    type: string
-                    format: date-time
+                    type: string                 
                   specialist:
                     type: string
                   branch:
