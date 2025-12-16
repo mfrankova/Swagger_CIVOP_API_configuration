@@ -404,17 +404,18 @@ paths:
               schema:
                 type: object
                 properties:
+                   
                   id:
                     type: integer
                     description:  Defect ID (same as defectId when not archived)
+                  documentId:
+                    type: integer 
                   archived:
                     type: boolean
                   archivedId:
                     type: integer
                     nullable: true
-                    description: ID of the archived row, present only when archived=true
-                  documentId:
-                    type: integer                    
+                    description: ID of the archived row, present only when archived=true                                    
                   title:
                     type: string
                   inspectionDate:
