@@ -371,11 +371,7 @@ paths:
                   type: string
                 inspectionDate:
                   type: string
-                  format: date
-                branch:
-                  type: string
-                establishment:
-                  type: string
+                  format: date                
                 specialist:
                   type: string
                 responsiblePerson:
