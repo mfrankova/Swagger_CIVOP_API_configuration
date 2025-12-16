@@ -88,6 +88,9 @@ paths:
                     type: string
                   contentType:
                     type: string
+                  created_at:
+                    type: string
+                    format: date-time 
                    
         '500':
           description: Server error while processing the control task.
@@ -284,6 +287,9 @@ paths:
                   defectDeadline:
                     type: string
                     format: date
+                  created_at:
+                    type: string
+                    format: date-time 
         '500':
           description: Internal server error
         '400':
